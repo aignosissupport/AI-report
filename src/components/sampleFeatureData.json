@@ -1,0 +1,19 @@
+{"patient_id": "89dac44d-56a0-4bf5-9319-26f80ff6f958", 
+"transaction_id": "795298f5-adc5-48b1-97aa-5d92d4993e3e", 
+"Focal Point IOU": 10, 
+"Joint Attention Error (%)": 80, 
+"Eye Contact Error": 53, 
+"Gaze Dispersion (pixels)": 10, 
+"Gaze Speed (px/sec)": 10, 
+"Screen Focus (%)": 86, 
+"Object Tracking Error (px)": 68, 
+"Social Preference (%)": 33, 
+"Gaze Holds": 10, 
+"Saccades (per second)": 10, 
+"LipSync Recognisability (%)": 10, 
+"Convo Recognisability (%)": 10, 
+"meanYaw (deg/sec)": 78, 
+"meanPitch (deg/sec)": 10, 
+"meanRoll (deg/sec)": 60
+
+}
