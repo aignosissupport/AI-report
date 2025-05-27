@@ -8,8 +8,7 @@ import { AppContext } from "../../AppContext";
 
 const pdfData = [
   {
-    url:
-      "https://storage.googleapis.com/aignosis_static_assets/Screening-Report/page1.1.png",
+    url: "https://storage.googleapis.com/aignosis_static_assets/Screening-Report/page1.1.png",
     alttext: "report first page",
   },
   {
@@ -98,25 +97,6 @@ const ComponentToPrint = React.forwardRef((props, ref) => (
 ));
 
 const GeneratePDF = () => {
-  // const getURLParameter = (name) => {
-  //   const urlParams = new URLSearchParams(window.location.search);
-  //   return urlParams.get(name);
-  // };
-
-  // const patient_uid = getURLParameter("PATIENT_UID") || "N/A";
-  // const transaction_id = getURLParameter("TRANSACTION_ID") || "N/A";
-  // const { testData, fetchTestData } = useContext(AppContext);
-
-  // useEffect(() => {
-  //   fetchTestData(patient_uid, transaction_id);
-  //   console.log("testData in page 1 is", testData);
-
-  //   console.log("patient_uid in page 1 is", patient_uid);
-  //   console.log("transaction_id in page 1 is", transaction_id);
-  // }, [patient_uid, transaction_id]);
-
-  // const name = getURLParameter("name") || "N/A";
-
   const componentRef = useRef();
   const [loading, setLoading] = useState(false); // Loader state
 
@@ -131,11 +111,7 @@ const GeneratePDF = () => {
     const pages = document.querySelectorAll(".pdf-page");
 
     for (let i = 0; i < pages.length; i++) {
-      console.log('debug here ', pages)
       const page = pages[i];
-      // if (i === 7 || i === 9 || i === 11 || i === 13 || i === 15) {
-      //   continue;
-      // }
       try {
         await new Promise((resolve) => setTimeout(resolve, 1500)); // small delay for rendering
         const canvas = await html2canvas(page, {

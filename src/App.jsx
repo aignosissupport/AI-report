@@ -33,11 +33,7 @@ const App = () => {
       <Router>
         <Routes>
           {" "}
-          {/* Use Routes to define all your routes */}
-          {/* <Route path="/download" element={<Report />} /> */}
           <Route path="/report" element={<ReportComLast />} />
-          {/* <Route path="/" element={<ResultsPage />} /> */}
-          {/* <Route path='/generatepdf' element={<GeneratePDF />} /> */}
           <Route path="/" element={<GeneratePDF />} />
         </Routes>
       </Router>

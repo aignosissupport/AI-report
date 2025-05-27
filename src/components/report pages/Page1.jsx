@@ -1,10 +1,13 @@
-import React, { useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { AppContext } from "../../AppContext";
+import { split } from "postcss/lib/list";
 
 const Page1 = () => {
   const lstm_cnn_model_threshold = 0.4;
   const txgb_model_threshold = 0.5;
+
+  const [dateOfAssessment, setDateOfAssessment] = useState("");
 
   const getURLParameter = (name) => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -45,19 +48,38 @@ const Page1 = () => {
     }`;
   };
 
+  const unixMillisToDate = (testTimestampUnixMillis) => {
+    setDateOfAssessment(formatTimestamp(testTimestampUnixMillis));
+  };
+
+  function formatTimestamp(unixMillis) {
+    // console.log(unixMillis)
+    const date = new Date(unixMillis);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // months are 0-based
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
   const patient_uid = getURLParameter("PATIENT_UID") || "N/A";
   const transaction_id = getURLParameter("TRANSACTION_ID") || "N/A";
   const name = getURLParameter("name") || "N/A";
   const dob = formatDate(getURLParameter("patientDOB") || "N/A");
-  const doa = formatDate(getURLParameter("date_of_assesment") || "N/A");
-  const { testData, fetchTestData } = useContext(AppContext);
 
-  // const formattedDob = `${dob.slice(6, 8)}${dob.slice(4, 6)}${dob.slice(0, 4)}`;
-  // const formattedDobWithSlashes = `${formattedDob.slice(0, 2)}/${formattedDob.slice(2, 4)}/${formattedDob.slice(4)}`;
+  // working on timestamp first
+  const { testData, fetchTestData } = useContext(AppContext);
 
   useEffect(() => {
     fetchTestData(patient_uid, transaction_id);
-  }, [patient_uid, transaction_id]);
+    console.log(dateOfAssessment)
+  }, [dateOfAssessment]);
+
+  useEffect(() => {
+    if (testData.PATIENT_UID !== "") {
+      console.log(testData);
+      unixMillisToDate(testData.test_timestamp);
+    }
+  }, [testData]);
 
   return (
     <div
@@ -145,7 +167,7 @@ const Page1 = () => {
               border: "0px solid blue",
               flexDirection: "column",
               alignItems: "center",
-              marginBottom: 20
+              marginBottom: 20,
             }}
           >
             <h1
@@ -193,7 +215,7 @@ const Page1 = () => {
               <br />
               Date of Birth: {dob}
               <br />
-              Date of Assessment: {doa}
+              Date of Assessment: {dateOfAssessment}
             </p>
           </div>
 

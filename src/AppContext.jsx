@@ -5,11 +5,15 @@ import axios from "axios";
 export const AppContext = createContext();
 
 // API Endpoints
-const API_URL = "https://de.aignosismdw.in/rest/feature_extraction_test_results/";
+const API_URL =
+  "https://de.aignosismdw.in/rest/feature_extraction_test_results/";
 const AI_REPORT_URL =
   "https://de.aignosismdw.in/rest/get_ai_report_available_status/";
 const PSYCHOLOGIST_REPORT_URL =
   "https://de.aignosismdw.in/rest/get_psychologist_report_available_status/";
+
+const GET_TEST_TIMETAMP_API_URL =
+  "https://de.aignosismdw.in/rest/get_test_timestamp/";
 
 // Create the provider component
 export const AppProvider = ({ children }) => {
@@ -37,6 +41,7 @@ export const AppProvider = ({ children }) => {
     psychologist_report_available: "",
     psychologistformtestsData: "",
     autismProbability: "",
+    test_timestamp: "",
   });
 
   const getURLParameter = (name) => {
@@ -64,7 +69,6 @@ export const AppProvider = ({ children }) => {
 
           fetchPsychologistFormResults(patient_uid, transaction_id)
             .then((results) => {
-              console.log("psychologist_form_results", results);
 
               setTestData((prevState) => ({
                 ...prevState,
@@ -73,20 +77,28 @@ export const AppProvider = ({ children }) => {
 
               fetchTestData(patient_uid, transaction_id)
                 .then((data) => {
-                  console.log('AI results data ', data);
 
                   setTestData((prevState) => ({
                     ...prevState,
                     featureExtractionTestData: data,
                   }));
-                  
+
+                  fetchTestTimestamp(patient_uid, transaction_id)
+                    .then(async (data) => {
+                      let response_obj = await data.json();
+                      setTestData((prevState) => ({
+                        ...prevState,
+                        test_timestamp: response_obj.test_timestamp,
+                      }));
+                    })
+                    .catch((error) => {
+                      console.error("Error fetching test timestamp", error);
+                    });
                 })
                 .catch((error) => {
-                  console.log("Error fetching test data", error);
                 });
             })
             .catch((error) => {
-              console.log("Error fetching psychologist form results: ", error);
             });
         }
       })
@@ -94,6 +106,19 @@ export const AppProvider = ({ children }) => {
         console.error(err);
       });
   }, []);
+
+  const fetchTestTimestamp = async (patient_uid, transaction_id) => {
+    try {
+      const testTimestampUnixMillis = await fetch(GET_TEST_TIMETAMP_API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ patient_uid, transaction_id }),
+      });
+      return testTimestampUnixMillis;
+    } catch (e) {
+      console.error("Error fetching test timestamp", e);
+    }
+  };
 
   // Function to check AI and Psychologist report availability
   const fetchReportAvailability = async (patient_uid, transaction_id) => {
@@ -112,12 +137,6 @@ export const AppProvider = ({ children }) => {
 
       const aiData = await aiResponse.json();
       const psychologistData = await psychologistResponse.json();
-
-      console.log("ai data available = ", aiData.ai_report_available);
-      console.log(
-        "psychologist data available = ",
-        psychologistData.Psychologist_report_available
-      );
 
       return (
         aiData.ai_report_available &&
@@ -144,38 +163,6 @@ export const AppProvider = ({ children }) => {
       const psych_form_results = response.data;
 
       return psych_form_results;
-
-      // const psychologistFormData = {
-      //   PATIENT_UID: data.PATIENT_UID,
-      //   TRANSACTION_ID: data.TRANSACTION_ID,
-      //  Math.round( patientName: data.patientName) || "",
-      //  Math.round( patienDOB: data.patientDOB) || "",
-      //  Math.round( inclenFormData: data.inclenFormData) || {},
-      //  Math.round( isaaFormData: data.isaaFormData) || {},
-      //  Math.round( carsFormData: data.carsFormData) || {},
-      //  Math.round( dataCollectionMode: data.dataCollectionMode) || [],
-      //  Math.round( patienthistoryform1Data: data.patienthistoryform1Data) || "",
-      //  Math.round( patienthistoryform2Data: data.patienthistoryform2Data) || "",
-      //  Math.round( patienthistoryform3Data: data.patienthistoryform3Data) || "",
-      //  Math.round( patienthistoryform4Data: data.patienthistoryform4Data) || "",
-      //  Math.round( videolanguage: data.videolanguage) || "",
-      //  Math.round( mchatscore: data.mchatscore) || "",
-      //  Math.round( carsscore: data.carsscore) || "",
-      //  Math.round( isaascore: data.isaascore) || "",
-      //  Math.round( inclenscore: data.inclenscore) || "",
-      //  Math.round( inclenScores: data.inclenScores) || {},
-      //  Math.round( inclenFullScore: data.inclenFullScore) || "",
-      //  Math.round( patienthistoryform1data: data.patienthistoryform1data) || {},
-      //  Math.round( patienthistoryform2data: data.patienthistoryform2data) || {},
-      //  Math.round( patienthistoryform3data: data.patienthistoryform3data) || {},
-      //  Math.round( mchatScore: data.mchatScore) || "",
-      //  Math.round( patienthistoryform4data: data.patienthistoryform4data) || {},
-      // };
-
-      // setTestData((prevData) => ({
-      //   ...prevData,
-      //   ...psychologistFormData,
-      // }));
     } catch (error) {
       console.error("Error fetching psychologist form results:", error);
       // TODO: redirect to error page
@@ -186,7 +173,7 @@ export const AppProvider = ({ children }) => {
 
   // Function to fetch test data
   const fetchTestData = async (patient_uid, transaction_id) => {
-    // console.log("Fetching test data...");
+    
     try {
       const response = await fetch(API_URL, {
         method: "POST",
@@ -196,38 +183,14 @@ export const AppProvider = ({ children }) => {
       const data = await response.json();
 
       if (!response.ok) {
-        console.log("Failed to fetch ai test data");
         // TODO: redirect to error page
       }
-      setTestData({
-        PATIENT_UID: data.patient_id || "",
-        TRANSACTION_ID: data.transaction_id || "",
-        focal_IOU: replaceZeroWithTen(Math.round(data["Focal Point IOU"]) || ""),
-        joint_attention_error: replaceZeroWithTen(Math.round(data["Joint Attention Social"]) || ""),
-        eye_contact_error: replaceZeroWithTen(Math.round(data["Eye Contact Error"]) || ""),
-        gaze_dispersion: replaceZeroWithTen(Math.round(data["Gaze Dispersion"]) || ""),
-        gaze_speed: replaceZeroWithTen(Math.round(data["Gaze Speed"]) || ""),
-        screen_focus: replaceZeroWithTen(Math.round(data["Screen Focus"]) || ""),
-        object_tracking_error: replaceZeroWithTen(Math.round(data["Object Tracking"]) || ""),
-        social_preference: replaceZeroWithTen(Math.round(data["Social Preference"]) || ""),
-        gaze_holds: replaceZeroWithTen(Math.round(data["Gaze Hold"]) || ""),
-        saccades: replaceZeroWithTen(Math.round(data["Saccades"]) || ""),
-        lipsync_recog: replaceZeroWithTen(Math.round(data["Lipsync"]) || ""),
-        convo_recog: replaceZeroWithTen(Math.round(data["Conversation Recognition"]) || ""),
-        yaw: replaceZeroWithTen(Math.round(data["Yaw"]) || ""),
-        pitch: replaceZeroWithTen(Math.round(data["Pitch"]) || ""),
-        roll: replaceZeroWithTen(Math.round(data["Roll"]) || ""),
-        autismProbability: data["autismProbability"] || "",
-        TXGB_model_proba: data["TXGB_model_proba"] || undefined,
-        etsp_lstm_cnn_model_prediction: data["etsp_lstm_cnn_model_prediction"] || undefined,
-      });
-      return data;
+     return data;
     } catch (error) {
       console.error("Error fetching test data:", error);
       // TODO: redirect to error page
     }
   };
-  // console.log("Testdata at context= ",testData);
   return (
     <AppContext.Provider value={{ testData, setTestData, fetchTestData }}>
       {children}
