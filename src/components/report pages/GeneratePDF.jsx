@@ -39,14 +39,6 @@ const pdfData = [
 ];
 
 const SecondpdfData = [
-  // {
-  //     url:'https://prod-aignosis-terraform-state.s3.ap-south-1.amazonaws.com/1738768677082_page8.png',
-  //     alttext:'report eight page',
-  // },
-  // {
-  //     url:'https://prod-aignosis-terraform-state.s3.ap-south-1.amazonaws.com/1738768918579_page9.png',
-  //     alttext:'report nine page',
-  // },
   {
     url: "https://storage.googleapis.com/aignosis_static_assets/Screening-Report/page2.1.png",
     alttext: "report ten page",

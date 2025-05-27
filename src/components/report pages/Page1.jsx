@@ -61,7 +61,7 @@ const Page1 = () => {
       <div className="pdf-page bg-white p-8 shadow-md rounded-md w-[210mm] h-[297mm] relative">
         
         <h1 className="text-lg font-semibold text-left text-purple-700">
-          Development Screening test
+          Development Screening Results
         </h1>
         
         <div className="w-[90%] border-t-2 mt-2 border-purple-700"></div>
