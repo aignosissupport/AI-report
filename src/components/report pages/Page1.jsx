@@ -4,6 +4,7 @@ import { AppContext } from "../../AppContext";
 import { split } from "postcss/lib/list";
 
 const Page1 = () => {
+  // HARD CODED THRESHOLDS, THESE ARE MODEL DEPENDENT CALCULATED VIA THE ROC CURVE
   const lstm_cnn_model_threshold = 0.4;
   const txgb_model_threshold = 0.5;
 
@@ -14,38 +15,26 @@ const Page1 = () => {
     return urlParams.get(name);
   };
 
-  const getAggregatedAutismScore = (testData) => {
-    if (
-      testData["TXGB_model_proba"] === undefined &&
-      testData["etsp_lstm_cnn_model_prediction"] === undefined
-    ) {
-      return -1;
-    }
+  // const formatDate = (rawDate) => {
+  //   if (!rawDate) return "N/A";
+  //   if (!isNaN(rawDate)) {
+  //     const excelEpoch = new Date(1899, 11, 30);
+  //     const date = new Date(excelEpoch.getTime() + rawDate * 86400000);
+  //     return `${String(date.getDate()).padStart(2, "0")}/${String(
+  //       date.getMonth() + 1
+  //     ).padStart(2, "0")}/${date.getFullYear()}`;
+  //   }
+  //   const parts = rawDate.split("/");
+  //   if (parts.length !== 3) return rawDate;
+  //   return `${parts[1].padStart(2, "0")}/${parts[0].padStart(2, "0")}/${
+  //     parts[2]
+  //   }`;
+  // };
 
-    if (
-      testData["TXGB_model_proba"] > txgb_model_threshold &&
-      testData["etsp_lstm_cnn_model_prediction"] > lstm_cnn_model_threshold
-    ) {
-      return 1;
-    } else {
-      return 0;
-    }
-  };
-
-  const formatDate = (rawDate) => {
-    if (!rawDate) return "N/A";
-    if (!isNaN(rawDate)) {
-      const excelEpoch = new Date(1899, 11, 30);
-      const date = new Date(excelEpoch.getTime() + rawDate * 86400000);
-      return `${String(date.getDate()).padStart(2, "0")}/${String(
-        date.getMonth() + 1
-      ).padStart(2, "0")}/${date.getFullYear()}`;
-    }
-    const parts = rawDate.split("/");
-    if (parts.length !== 3) return rawDate;
-    return `${parts[1].padStart(2, "0")}/${parts[0].padStart(2, "0")}/${
-      parts[2]
-    }`;
+  const customDateFormatter = (dob) => {
+    // assuming dob is a string of the type 'yyyymmdd' or an example would be 20170902
+    // so we're returning 02/09/2017
+    return `${dob[6]}${dob[7]}/${dob[4]}${dob[5]}/${dob[0]}${dob[1]}${dob[2]}${dob[3]}`;
   };
 
   const unixMillisToDate = (testTimestampUnixMillis) => {
@@ -53,7 +42,6 @@ const Page1 = () => {
   };
 
   function formatTimestamp(unixMillis) {
-    // console.log(unixMillis)
     const date = new Date(unixMillis);
     const day = String(date.getDate()).padStart(2, "0");
     const month = String(date.getMonth() + 1).padStart(2, "0"); // months are 0-based
@@ -64,19 +52,44 @@ const Page1 = () => {
   const patient_uid = getURLParameter("PATIENT_UID") || "N/A";
   const transaction_id = getURLParameter("TRANSACTION_ID") || "N/A";
   const name = getURLParameter("name") || "N/A";
-  const dob = formatDate(getURLParameter("patientDOB") || "N/A");
+  const dob = customDateFormatter(getURLParameter("patientDOB")) || "N/A";
+  // const dob = formatDate( || "N/A");
 
   // working on timestamp first
   const { testData, fetchTestData } = useContext(AppContext);
 
+  const getAggregatedAutismScore = (ai_report_data) => {
+    if (ai_report_data.feature_extraction_test_data != undefined) {
+      if (
+        ai_report_data.feature_extraction_test_data["TXGB_model_proba"] ===
+          undefined &&
+        ai_report_data.feature_extraction_test_data[
+          "etsp_lstm_cnn_model_prediction"
+        ] === undefined
+      ) {
+        return -1;
+      }
+
+      if (
+        ai_report_data.feature_extraction_test_data["TXGB_model_proba"] >
+          txgb_model_threshold &&
+        ai_report_data.feature_extraction_test_data[
+          "etsp_lstm_cnn_model_prediction"
+        ] > lstm_cnn_model_threshold
+      ) {
+        return 1;
+      } else {
+        return 0;
+      }
+    }
+  };
+
   useEffect(() => {
     fetchTestData(patient_uid, transaction_id);
-    console.log(dateOfAssessment)
   }, [dateOfAssessment]);
 
   useEffect(() => {
     if (testData.PATIENT_UID !== "") {
-      console.log(testData);
       unixMillisToDate(testData.test_timestamp);
     }
   }, [testData]);

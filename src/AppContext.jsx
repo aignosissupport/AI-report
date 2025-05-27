@@ -22,26 +22,12 @@ export const AppProvider = ({ children }) => {
     TRANSACTION_ID: "",
     patientName: "",
     patienDOB: "",
-    focal_IOU: "",
-    joint_attention_error: "",
-    eye_contact_error: "",
-    gaze_dispersion: "",
-    gaze_speed: "",
-    screen_focus: "",
-    object_tracking_error: "",
-    social_preference: "",
-    gaze_holds: "",
-    saccades: "",
-    lipsync_recog: "",
-    convo_recog: "",
-    yaw: "",
-    pitch: "",
-    roll: "",
     ai_report_available: "",
     psychologist_report_available: "",
     psychologistformtestsData: "",
     autismProbability: "",
     test_timestamp: "",
+    feature_extraction_test_data: undefined,
   });
 
   const getURLParameter = (name) => {
@@ -80,7 +66,7 @@ export const AppProvider = ({ children }) => {
 
                   setTestData((prevState) => ({
                     ...prevState,
-                    featureExtractionTestData: data,
+                    feature_extraction_test_data: data,
                   }));
 
                   fetchTestTimestamp(patient_uid, transaction_id)
