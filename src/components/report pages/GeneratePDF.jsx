@@ -131,10 +131,11 @@ const GeneratePDF = () => {
     const pages = document.querySelectorAll(".pdf-page");
 
     for (let i = 0; i < pages.length; i++) {
+      console.log('debug here ', pages)
       const page = pages[i];
-      if (i === 7 || i === 9 || i === 11 || i === 13 || i === 15) {
-        continue;
-      }
+      // if (i === 7 || i === 9 || i === 11 || i === 13 || i === 15) {
+      //   continue;
+      // }
       try {
         await new Promise((resolve) => setTimeout(resolve, 1500)); // small delay for rendering
         const canvas = await html2canvas(page, {

@@ -30,15 +30,19 @@ const Page1 = () => {
   };
 
   const formatDate = (rawDate) => {
-    if (!rawDate) return 'N/A';
+    if (!rawDate) return "N/A";
     if (!isNaN(rawDate)) {
       const excelEpoch = new Date(1899, 11, 30);
       const date = new Date(excelEpoch.getTime() + rawDate * 86400000);
-      return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+      return `${String(date.getDate()).padStart(2, "0")}/${String(
+        date.getMonth() + 1
+      ).padStart(2, "0")}/${date.getFullYear()}`;
     }
-    const parts = rawDate.split('/');
+    const parts = rawDate.split("/");
     if (parts.length !== 3) return rawDate;
-    return `${parts[1].padStart(2, '0')}/${parts[0].padStart(2, '0')}/${parts[2]}`;
+    return `${parts[1].padStart(2, "0")}/${parts[0].padStart(2, "0")}/${
+      parts[2]
+    }`;
   };
 
   const patient_uid = getURLParameter("PATIENT_UID") || "N/A";
@@ -53,28 +57,138 @@ const Page1 = () => {
 
   useEffect(() => {
     fetchTestData(patient_uid, transaction_id);
-    console.log("my debug log", testData);
   }, [patient_uid, transaction_id]);
 
   return (
-    <div className="pdf-image flex flex-col font-manrope items-center p-8 bg-white min-h-screen relative">
-      <div className="pdf-page bg-white p-8 shadow-md rounded-md w-[210mm] h-[297mm] relative">
-        
-        <h1 className="text-lg font-semibold text-left text-purple-700">
-          Development Screening Results
-        </h1>
-        
-        <div className="w-[90%] border-t-2 mt-2 border-purple-700"></div>
+    <div
+      style={{
+        display: "flex",
+        border: "0px solid red",
+        flexDirection: "column",
+        fontFamily: "Manrope, sans-serif",
+        alignItems: "center",
+        padding: "32px",
+        backgroundColor: "white",
+        minHeight: "100vh",
+        position: "relative",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          border: "0px solid green",
+          backgroundColor: "white",
+          padding: "32px",
+          boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+          borderRadius: "6px",
+          width: "210mm",
+          height: "297mm",
+          position: "relative",
+        }}
+      >
         {/* Top Right Circles */}
-        <div className="absolute top-0 right-0 w-[200px] h-[200px] z-0">
-          <div className="absolute top-[-70px] right-[-30px] w-[150px] h-[150px] rounded-full border-[8px] border-[#8e44ad]"></div>
-          <div className="absolute top-[-50px] right-[-10px] w-[100px] h-[100px] rounded-full border-[5px] border-[#c27fe0]"></div>
-        
+        <div
+          style={{
+            position: "absolute",
+            top: "0",
+            right: "0",
+            width: "200px",
+            height: "200px",
+            zIndex: 0,
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              top: "-70px",
+              right: "-30px",
+              width: "150px",
+              height: "150px",
+              borderRadius: "50%",
+              border: "8px solid #8e44ad",
+            }}
+          ></div>
+          <div
+            style={{
+              position: "absolute",
+              top: "-50px",
+              right: "-10px",
+              width: "100px",
+              height: "100px",
+              borderRadius: "50%",
+              border: "5px solid #c27fe0",
+            }}
+          ></div>
         </div>
 
-        <div className="flex flex-col items-center justify-center w-full flex-1">
-          <div className="bg-[#f9f4ff] rounded-lg shadow-md p-5 w-4/5 max-w-[500px] border border-[#8e44ad] mb-4 mt-6">
-            <p className="font-bold text-center text-[#333]">
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            width: "80%",
+            zIndex: 10,
+            padding: 20,
+            border: "0px solid red",
+            height: "80vh",
+          }}
+        >
+          {/* development screening results box */}
+          <div
+            style={{
+              flex: 1,
+              display: "flex",
+              justifyContent: "center",
+              border: "0px solid blue",
+              flexDirection: "column",
+              alignItems: "center",
+              marginBottom: 20
+            }}
+          >
+            <h1
+              style={{
+                fontSize: 30,
+                fontWeight: "450",
+              }}
+            >
+              Development Screening Results
+            </h1>
+
+            <div
+              style={{
+                width: "100%",
+                borderTop: "3px solid #8d44ac",
+                marginTop: 15,
+              }}
+            ></div>
+          </div>
+
+          {/* box 1 */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              flex: 1,
+              backgroundColor: "#f9f4ff",
+              borderRadius: "8px",
+              boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+              padding: "20px",
+              width: "100%",
+              border: "1px solid #8e44ad",
+              marginBottom: "16px",
+            }}
+          >
+            <p
+              style={{
+                fontWeight: "bold",
+                textAlign: "center",
+                color: "#333",
+              }}
+            >
               Name: {name}
               <br />
               Date of Birth: {dob}
@@ -83,52 +197,176 @@ const Page1 = () => {
             </p>
           </div>
 
-          <div className="flex flex-col items-center w-4/5 max-w-[500px] z-10">
-            <div className="bg-[#f9f4ff] rounded-lg shadow-md p-5 my-2 w-full border border-[#8e44ad]">
-              {getAggregatedAutismScore(testData) === 0 ? (
-                <p className="font-bold text-base text-[#333]">
-                  Your child does <span className="text-[#8e44ad] font-bold">not</span> show{" "}
-                  <span className="text-[#8e44ad] font-bold">autistic traits</span> based on
-                  this screening.
-                </p>
-              ) : getAggregatedAutismScore(testData) === 1 ? (
-                <p className="font-bold text-base text-[#333]">
-                  Your child <span className="text-[#8e44ad] font-bold">shows</span>{" "}
-                  <span className="text-[#8e44ad] font-bold">autistic traits</span> based on
-                  this screening.
-                </p>
-              ) : (
-                <p className="font-bold text-base text-[#333]">
-                  Unfortunately, we do{" "}
-                  <span className="text-[#8e44ad] font-bold">not have enough information</span>{" "}
-                  to determine whether your child shows autistic traits.
-                </p>
-              )}
-            </div>
-
-            <div className="bg-[#f9f4ff] rounded-lg shadow-md p-5 mt-4 w-full border border-[#8e44ad]">
-              <h3 className="text-lg mb-2 text-[#8e44ad] font-semibold">What This Means</h3>
-              <p className="text-sm text-[#666] leading-relaxed mb-2 text-center">
-                This screening is designed to detect the possibility of social and
-                communication challenges that your child might be experiencing.
+          {/* box 2 */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              flex: 1,
+              backgroundColor: "#f9f4ff",
+              borderRadius: "8px",
+              boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+              padding: "20px",
+              margin: "8px 0",
+              width: "100%",
+              border: "1px solid #8e44ad",
+            }}
+          >
+            {getAggregatedAutismScore(testData) === 0 ? (
+              <p
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "16px",
+                  color: "#333",
+                }}
+              >
+                Your child does{" "}
+                <span style={{ color: "#8e44ad", fontWeight: "bold" }}>
+                  not
+                </span>{" "}
+                show{" "}
+                <span style={{ color: "#8e44ad", fontWeight: "bold" }}>
+                  autistic traits
+                </span>{" "}
+                based on this screening.
               </p>
-              <p className="text-sm text-[#666] leading-relaxed text-center">
+            ) : getAggregatedAutismScore(testData) === 1 ? (
+              <p
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "16px",
+                  color: "#333",
+                }}
+              >
+                Your child{" "}
+                <span style={{ color: "#8e44ad", fontWeight: "bold" }}>
+                  shows
+                </span>{" "}
+                <span style={{ color: "#8e44ad", fontWeight: "bold" }}>
+                  autistic traits
+                </span>{" "}
+                based on this screening.
+              </p>
+            ) : (
+              <p
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "16px",
+                  color: "#333",
+                }}
+              >
+                Unfortunately, we do{" "}
+                <span style={{ color: "#8e44ad", fontWeight: "bold" }}>
+                  not have enough information
+                </span>{" "}
+                to determine whether your child shows autistic traits.
+              </p>
+            )}
+          </div>
+
+          {/* box 3 */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "column",
+
+              flex: 1,
+              backgroundColor: "#f9f4ff",
+              borderRadius: "8px",
+              boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+              padding: "20px",
+              marginTop: "16px",
+              width: "100%",
+              border: "1px solid #8e44ad",
+            }}
+          >
+            <h3
+              style={{
+                fontSize: "18px",
+                marginBottom: "8px",
+                color: "#8e44ad",
+                fontWeight: "600",
+              }}
+            >
+              What This Means
+            </h3>
+            <div
+              id="wtm-text-div"
+              style={{
+                border: "0px solid pink",
+                flexDirection: "column",
+                width: "100%",
+                textAlign: "center",
+                padding: 5,
+              }}
+            >
+              <div
+                style={{
+                  fontSize: 15,
+                  color: "#666",
+                  lineHeight: "1.6",
+                  marginBottom: "8px",
+                  border: "0px solid green",
+                }}
+              >
+                This screening is designed to detect the possibility of social
+                and communication challenges that your child might be
+                experiencing.
+              </div>
+              <div
+                style={{
+                  fontSize: 15,
+                  color: "#666",
+                  lineHeight: "1.6",
+                  border: "0px solid green",
+                }}
+              >
                 Remember that this is just a screening tool. For a comprehensive
                 evaluation, please consult with a developmental pediatrician or
                 child psychologist.
-              </p>
+              </div>
             </div>
           </div>
         </div>
-        
-     
 
         {/* Bottom Left Circles */}
-        <div className="absolute bottom-0 left-0 w-[200px] h-[200px] z-0">
-          <div className="absolute bottom-[-150px] left-[-150px] w-[700px] h-[700px] rounded-full border-[8px] border-[#8e44ad]"></div>
-          <div className="absolute bottom-[-30px] left-[-30px] w-[500px] h-[500px] rounded-full border-[5px] border-[#c27fe0]"></div>
+        <div
+          style={{
+            position: "absolute",
+            bottom: "0",
+            left: "0",
+            width: "200px",
+            height: "200px",
+            zIndex: 0,
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              bottom: "-110px",
+              left: "-110px",
+              width: "300px",
+              height: "300px",
+              borderRadius: "50%",
+              border: "8px solid #8e44ad",
+            }}
+          ></div>
+          <div
+            style={{
+              position: "absolute",
+              bottom: "-30px",
+              left: "-30px",
+              width: "150px",
+              height: "150px",
+              borderRadius: "50%",
+              border: "5px solid #c27fe0",
+            }}
+          ></div>
         </div>
-
       </div>
     </div>
   );
