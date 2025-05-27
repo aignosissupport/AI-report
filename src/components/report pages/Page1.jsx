@@ -133,7 +133,6 @@ const Page1 = () => {
             width: "200px",
             height: "200px",
             zIndex: 0,
-            overflow: "hidden",
           }}
         >
           <div
