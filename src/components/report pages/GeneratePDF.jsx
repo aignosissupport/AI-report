@@ -100,6 +100,18 @@ const GeneratePDF = () => {
   const componentRef = useRef();
   const [loading, setLoading] = useState(false); // Loader state
 
+  const getURLParameter = (name) => {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(name);
+  };
+  const [patientName, setPatientName] = useState(
+    getURLParameter("name") || "N/A"
+  );
+
+  useEffect(() => {
+    if (patientName !== undefined) console.log(patientName);
+  }, [patientName]);
+
   const generatePDF = async () => {
     setLoading(true); // Show loader when PDF generation starts
     const pdf = new jsPDF({
@@ -131,7 +143,7 @@ const GeneratePDF = () => {
       }
     }
 
-    pdf.save(`${name}_report.pdf`);
+    pdf.save(`${patientName}_report.pdf`);
     setLoading(false); // Hide loader after download is complete
   };
 
