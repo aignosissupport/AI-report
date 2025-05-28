@@ -1,5 +1,6 @@
 import React, { createContext, useEffect, useState } from "react";
 import axios from "axios";
+import { decryptPassword, decryptCalibrationData } from "./components/aignosisintegration/DecryptionUtils";
 
 // Create the context
 export const AppContext = createContext();
@@ -53,6 +54,40 @@ export const AppProvider = ({ children }) => {
             psychologist_report_available: true,
           }));
 
+          // Fetch encrypted patient info
+          fetchEncryptedPatientInfo(patient_uid, transaction_id)
+            .then((encryptedData) => {
+              const {
+                encryptedPatientInfo,
+                encryptedPatientInfoEncAesKey,
+              } = encryptedData;
+
+              decryptPassword(encryptedPatientInfoEncAesKey)
+                .then((calibrationAesKey) => {
+                  console.log("calibration aes key is " + calibrationAesKey);
+
+                  decryptCalibrationData(encryptedPatientInfo, calibrationAesKey)
+                    .then((patientInfo) => {
+                      console.log("Decrypted patient info:", patientInfo);
+
+                      setTestData((prevState) => ({
+                        ...prevState,
+                        patientName: patientInfo.patientName,
+                        patienDOB: patientInfo.patientDOB,
+                      }));
+                    })
+                    .catch((error) => {
+                      console.error("Error decrypting calibration data:", error);
+                    });
+                })
+                .catch((error) => {
+                  console.error("Error decrypting password:", error);
+                });
+            })
+            .catch((error) => {
+              console.error("Error fetching encrypted patient info:", error);
+            });
+
           fetchPsychologistFormResults(patient_uid, transaction_id)
             .then((results) => {
 
@@ -92,6 +127,26 @@ export const AppProvider = ({ children }) => {
         console.error(err);
       });
   }, []);
+
+  const fetchEncryptedPatientInfo = async (patient_uid, transaction_id) => {
+    try {
+      const response = await axios.post(
+        "https://prod.aignosismdw.in/rest/get_encrypted_patient_firestore_info/",
+        {
+          patient_uid,
+          transaction_id,
+        }
+      );
+
+      return {
+        encryptedPatientInfo: response.data.encrypted_patient_info,
+        encryptedPatientInfoEncAesKey:
+        response.data.encrypted_patient_info_enc_aes_key,
+      };
+    } catch (error) {
+      console.error("Error fetching encrypted patient info:", error);
+    }
+  };
 
   const fetchTestTimestamp = async (patient_uid, transaction_id) => {
     try {

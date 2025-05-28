@@ -51,12 +51,12 @@ const Page1 = () => {
 
   const patient_uid = getURLParameter("PATIENT_UID") || "N/A";
   const transaction_id = getURLParameter("TRANSACTION_ID") || "N/A";
-  const name = getURLParameter("name") || "N/A";
-  const dob = customDateFormatter(getURLParameter("patientDOB")) || "N/A";
-  // const dob = formatDate( || "N/A");
 
   // working on timestamp first
   const { testData, fetchTestData } = useContext(AppContext);
+
+  const name = testData.patientName || "N/A";
+  const dob = testData.patienDOB ?? "N/A";
 
   const getAggregatedAutismScore = (ai_report_data) => {
     if (ai_report_data.feature_extraction_test_data != undefined) {
