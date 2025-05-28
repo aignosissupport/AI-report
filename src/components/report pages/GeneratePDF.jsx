@@ -99,14 +99,8 @@ const ComponentToPrint = React.forwardRef((props, ref) => (
 const GeneratePDF = () => {
   const componentRef = useRef();
   const [loading, setLoading] = useState(false); // Loader state
-
-  const getURLParameter = (name) => {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get(name);
-  };
-  const [patientName, setPatientName] = useState(
-    getURLParameter("name") || "N/A"
-  );
+  const { testData } = useContext(AppContext);
+  const patientName = testData.patientName || "N/A";
 
   useEffect(() => {
     if (patientName !== undefined) console.log(patientName);
