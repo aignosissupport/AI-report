@@ -5,6 +5,7 @@ import Page1 from "./Page1";
 import Commnpdfpage from "./Commnpdfpage";
 import imglogo from "/aignosislogo.png";
 import { AppContext } from "../../AppContext";
+import ReportHeader from "../ReportHeader";
 
 const pdfData = [
   {
@@ -95,6 +96,8 @@ const ComponentToPrint = React.forwardRef((props, ref) => (
     ))}
   </div>
 ));
+
+ComponentToPrint.displayName = "ComponentToPrint";
 
 const GeneratePDF = () => {
   const componentRef = useRef();

@@ -30,6 +30,8 @@ export const AppProvider = ({ children }) => {
     test_timestamp: "",
     feature_extraction_test_data: undefined,
   });
+  // Add clinicLogo state
+  const [clinicLogo, setClinicLogo] = useState(null);
 
   const getURLParameter = (name) => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -127,6 +129,24 @@ export const AppProvider = ({ children }) => {
         console.error(err);
       });
   }, []);
+
+  useEffect(() => {
+    // Fetch logo when patient UID is set
+    if (testData.PATIENT_UID) {
+      const fetchClinicLogo = async () => {
+        try {
+          const response = await fetch(
+            `https://de.aignosismdw.in/rest/get_logo_url?patient_uid=${testData.PATIENT_UID}`
+          );
+          const data = await response.json();
+          setClinicLogo(data.logo_url);
+        } catch {
+          setClinicLogo(null);
+        }
+      };
+      fetchClinicLogo();
+    }
+  }, [testData.PATIENT_UID]);
 
   const fetchEncryptedPatientInfo = async (patient_uid, transaction_id) => {
     try {
@@ -233,7 +253,7 @@ export const AppProvider = ({ children }) => {
     }
   };
   return (
-    <AppContext.Provider value={{ testData, setTestData, fetchTestData }}>
+    <AppContext.Provider value={{ testData, setTestData, fetchTestData, clinicLogo }}>
       {children}
     </AppContext.Provider>
   );

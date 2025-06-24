@@ -32,7 +32,6 @@ const App = () => {
     <AppProvider>
       <Router>
         <Routes>
-          {" "}
           <Route path="/report" element={<ReportComLast />} />
           <Route path="/" element={<GeneratePDF />} />
         </Routes>
